@@ -21,7 +21,6 @@ String readedStrng = "";
 int iterator = 0;
 int endIteration = 0;
 int stepForReasing = 8;
-int stepForEEPROM = 8;
 
 int EEPROMAddres = 0;
 
@@ -32,7 +31,8 @@ void setup() {
 
   if (dataReadedFromEEPROM < 1) {
     dataReadedFromEEPROM = dataReadedFromEEPROM + 1;
-    readDataFromEEPROM();
+    Serial.println("Read Data From EEPROM");
+    readData(0);
     pinMode(LED, OUTPUT);
   }
 
@@ -106,13 +106,15 @@ void loop() {
       Serial.println("extraWater: " + extraWater);
       
       Serial.println("Size of startTimeForWater :" + sizeof(startTimeForWater));
+
+      
+      
       // Write data to EEPROM
       Serial.println("Write data to EEPROM");
-      writeDataFromEEPROM();
+      writeData(startTimeForWater);
 
      
       endIteration = 0;
-      stepForReasing = 8;
       command = "";
     }
     else {
@@ -136,63 +138,13 @@ String getSeconds(String str) {
   return str.substring(6, 8);
 }
 
-void readDataFromEEPROM() {
-  iterator = 0;
-  EEPROM.get(iterator, startTimeForLight); // 0-6
-  Serial.println("EEPROM startTimeForLight: " + startTimeForLight + ", readed with step " + iterator);
-  iterator = iterator + stepForEEPROM;
-  EEPROM.get(iterator, durationForLight); // 7 - 13
-  Serial.println("EEPROM durationForLight: " + durationForLight + ", readed with step " + iterator);
-  iterator = iterator + stepForEEPROM;
-  EEPROM.get(iterator, brakeTimeForLight); // 14 - 20
-  Serial.println("EEPROM brakeTimeForLight: " + brakeTimeForLight + ", readed with step " + iterator);
-  iterator = iterator + stepForEEPROM;
-  
-  EEPROM.get(iterator, startTimeForWater); // 21 - 27
-  Serial.println("EEPROM startTimeForWater: " + startTimeForWater + ", readed with step " + iterator);
-  iterator = iterator + stepForEEPROM;
-  EEPROM.get(iterator, durationForWater); // 28 - 34
-  Serial.println("EEPROM durationForWater: " + durationForWater + ", readed with step " + iterator);
-  iterator = iterator + stepForEEPROM;
-  EEPROM.get(iterator, brakeTimeForWater); // 35 - 42
-  Serial.println("EEPROM brakeTimeForWater: " + brakeTimeForWater + ", readed with step " + iterator);
-  iterator = 0;
-
-//  Serial.println("Readed data from EEPROM");
-//  Serial.println("startTimeForLight: " + startTimeForLight);
-//  Serial.println("brakeTimeForLight: " + brakeTimeForLight);
-//  Serial.println("startTimeForWater: " + startTimeForWater);
-//  Serial.println("durationForWater: " + durationForWater);
-//  Serial.println("brakeTimeForWater: " + brakeTimeForWater);
-}
- 
-void writeDataFromEEPROM() {
-  iterator = 0;
-  if( startTimeForLight.length() > 7) {
-    Serial.println("Write data to EEPROM size: " + startTimeForLight);
-    EEPROM.put(iterator, startTimeForLight); // 0-6
-    iterator = iterator + stepForEEPROM;
-    EEPROM.put(iterator, durationForLight); // 7 - 13
-    iterator = iterator + stepForEEPROM;
-    EEPROM.put(iterator, brakeTimeForLight); // 14 - 20
-    iterator = iterator + stepForEEPROM;
-    
-    EEPROM.put(iterator, startTimeForWater); // 21 - 27
-    iterator = iterator + stepForEEPROM;
-    EEPROM.put(iterator, durationForWater); // 28 - 34
-    iterator = iterator + stepForEEPROM;
-    EEPROM.put(iterator, brakeTimeForWater); // 35 - 42
-    
-    iterator = 0;
-  }
-}
-
-void saveData(String data) {
-  String result = "";
+void writeData(String data) {
+  Serial.println("Start writing: " + data);
+  int result = 0;
   EEPROMAddres = 0;
 
   for (int i = 0; i < 8; i = i + 2) {
-    result = data.substring(i, i+2);
+    result = data.substring(i, i+2).toInt();
     Serial.println(result);
     EEPROM.put(EEPROMAddres, result);
     EEPROMAddres = EEPROMAddres + 1;
@@ -200,17 +152,17 @@ void saveData(String data) {
   }
 }
 
-String readData() {
+String readData(int startAdress) {
   String result = "";
   EEPROMAddres = 0;
 
   for (int i = 0; i < 8; i = i + 2) {
     result = result + EEPROM.read(EEPROMAddres) + ":";
-    Serial.println(result);
     EEPROMAddres = EEPROMAddres + 1;
     i = i + 1;
   }
+  Serial.println("I am read from rpm: " + result);
 
-  return result.substring(0, 8);
+  return result.substring(startAdress, 8);
 }
 
