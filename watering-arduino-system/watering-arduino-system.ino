@@ -23,6 +23,8 @@ int endIteration = 0;
 int stepForReasing = 8;
 int stepForEEPROM = 8;
 
+int EEPROMAddres = 0;
+
 int dataReadedFromEEPROM = 0;
 
 void setup() {
@@ -163,7 +165,7 @@ void readDataFromEEPROM() {
 //  Serial.println("durationForWater: " + durationForWater);
 //  Serial.println("brakeTimeForWater: " + brakeTimeForWater);
 }
-
+ 
 void writeDataFromEEPROM() {
   iterator = 0;
   if( startTimeForLight.length() > 7) {
@@ -183,5 +185,32 @@ void writeDataFromEEPROM() {
     
     iterator = 0;
   }
+}
+
+void saveData(String data) {
+  String result = "";
+  EEPROMAddres = 0;
+
+  for (int i = 0; i < 8; i = i + 2) {
+    result = data.substring(i, i+2);
+    Serial.println(result);
+    EEPROM.put(EEPROMAddres, result);
+    EEPROMAddres = EEPROMAddres + 1;
+    i = i + 1;
+  }
+}
+
+String readData() {
+  String result = "";
+  EEPROMAddres = 0;
+
+  for (int i = 0; i < 8; i = i + 2) {
+    result = result + EEPROM.read(EEPROMAddres) + ":";
+    Serial.println(result);
+    EEPROMAddres = EEPROMAddres + 1;
+    i = i + 1;
+  }
+
+  return result.substring(0, 8);
 }
 
