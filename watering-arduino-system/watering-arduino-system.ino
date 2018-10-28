@@ -1,21 +1,20 @@
-#include <EEPROM.h>                 // Импортируем бмблиотеку
+#include <EEPROM.h>
 int LED = 13;
 int length = 4;
 String command = "";
 String test = "";
 String r = "";
-//sizeof(defaultVal) стандартная длинна ячейкми памяти для такого обьема равна 6
-String startTimeForLight = "11:11:11"; // 0-6
-String durationForLight = "11:11:11"; // 7 - 13
-String brakeTimeForLight = "11:11:11"; // 14 - 20
 
-String startTimeForWater = "11:11:11"; // 21 - 27
-String durationForWater = "11:11:11"; // 28 - 34
-String brakeTimeForWater = "11:11:11"; // 35 - 42
+String startTimeForLight = "";
+String durationForLight = "";
+String brakeTimeForLight = "";
+
+String startTimeForWater = "";
+String durationForWater = "";
+String brakeTimeForWater = "";
 
 String extraLight = "";
 String extraWater = "";
-String readedStrng = "";
 
 //data for usage
 int iterator = 0;
@@ -60,6 +59,8 @@ void loop() {
  
     if (r.equalsIgnoreCase(";")) {
       Serial.println("Nachal rabotat s " + command);
+      // validate
+      command = validator(command);
 
       //light config
       endIteration += stepForReasing;
@@ -179,5 +180,21 @@ String readData(int EEPROMAddres) {
   result = result.substring(0, 8);
 
   return result;
+}
+
+String validator(String inputData) {
+  int len = inputData.length();
+
+  for (int i = 0; i < len; i++) {
+    if (!isdigit(inputData[i])) {
+       inputData = inputData.substring(1, len); 
+       i = i - 1;
+    } else {
+      i = len + 1;
+    }
+  }
+
+  Serial.println(inputData);
+  return inputData;
 }
 
