@@ -32,7 +32,21 @@ void setup() {
   if (dataReadedFromEEPROM < 1) {
     dataReadedFromEEPROM = dataReadedFromEEPROM + 1;
     Serial.println("Read Data From EEPROM");
-    readData(0);
+    
+    startTimeForWater = readData(0);
+    durationForWater = readData(3);
+    brakeTimeForWater = readData(6);
+    Serial.println("startTimeForWater : " + startTimeForWater);
+    Serial.println("durationForWater : " + durationForWater);
+    Serial.println("brakeTimeForWater : " + brakeTimeForWater);
+
+    startTimeForLight = readData(9);
+    durationForLight = readData(12);
+    brakeTimeForLight = readData(15);
+    Serial.println("startTimeForLight : " + startTimeForLight);
+    Serial.println("durationForLight : " + durationForLight);
+    Serial.println("brakeTimeForLight : " + brakeTimeForLight);
+
     pinMode(LED, OUTPUT);
   }
 
@@ -96,22 +110,19 @@ void loop() {
       endIteration += 1;
       iterator = endIteration;
 
-      String hours = getHours(startTimeForWater);
-      String minutes = getMinutes(startTimeForWater);
-      String seconds = getSeconds(startTimeForWater);
-//      Serial.println("hours: " + hours + " ,Minutes " + minutes + " ,Seconds" + seconds);
-      
-
       Serial.println("extraLight: " + extraLight);
       Serial.println("extraWater: " + extraWater);
-      
-      Serial.println("Size of startTimeForWater :" + sizeof(startTimeForWater));
 
-      
-      
       // Write data to EEPROM
       Serial.println("Write data to EEPROM");
-      writeData(startTimeForWater);
+      // Water
+      writeData(startTimeForWater, 0);
+      writeData(durationForWater, 3);
+      writeData(brakeTimeForWater, 6);
+      // Light
+      writeData(startTimeForLight, 9);
+      writeData(durationForLight, 12);
+      writeData(brakeTimeForLight, 15);
 
      
       endIteration = 0;
@@ -138,10 +149,9 @@ String getSeconds(String str) {
   return str.substring(6, 8);
 }
 
-void writeData(String data) {
+void writeData(String data, int EEPROMAddres) {
   Serial.println("Start writing: " + data);
   int result = 0;
-  EEPROMAddres = 0;
 
   for (int i = 0; i < 8; i = i + 2) {
     result = data.substring(i, i+2).toInt();
@@ -149,20 +159,25 @@ void writeData(String data) {
     EEPROM.put(EEPROMAddres, result);
     EEPROMAddres = EEPROMAddres + 1;
     i = i + 1;
+    Serial.println("Last addres eerpm: " + EEPROMAddres); 
   }
 }
 
-String readData(int startAdress) {
+String readData(int EEPROMAddres) {
   String result = "";
-  EEPROMAddres = 0;
+  String readed = "";
 
   for (int i = 0; i < 8; i = i + 2) {
-    result = result + EEPROM.read(EEPROMAddres) + ":";
+    readed = EEPROM.read(EEPROMAddres);
+    if (readed.length() < 2) {
+      readed = "0" + readed;
+    }
+    result = result + readed + ":";
     EEPROMAddres = EEPROMAddres + 1;
     i = i + 1;
   }
-  Serial.println("I am read from rpm: " + result);
+  result = result.substring(0, 8);
 
-  return result.substring(startAdress, 8);
+  return result;
 }
 
