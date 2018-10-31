@@ -1,4 +1,6 @@
 #include <EEPROM.h>
+#include <DS1302.h>
+
 int LED = 13;
 int length = 4;
 String command = "";
@@ -24,9 +26,16 @@ int stepForReasing = 8;
 int EEPROMAddres = 0;
 
 int dataReadedFromEEPROM = 0;
+const int kCePin   = 5;  // Chip Enable
+const int kIoPin   = 6;  // Input/Output
+const int kSclkPin = 7;  // Serial Clock
+
+// Create a DS1302 object.
+DS1302 rtc(kCePin, kIoPin, kSclkPin);
 
 void setup() {
   Serial.begin(9600);
+  setUpClock();
 
   if (dataReadedFromEEPROM < 1) {
     dataReadedFromEEPROM = dataReadedFromEEPROM + 1;
@@ -61,6 +70,7 @@ void loop() {
       Serial.println("Nachal rabotat s " + command);
       // validate
       command = validator(command);
+      Serial.println("Validated comment is: " + command);
 
       //light config
       endIteration += stepForReasing;
@@ -194,7 +204,25 @@ String validator(String inputData) {
     }
   }
 
-  Serial.println(inputData);
   return inputData;
+}
+
+void setUpClock() {  
+  rtc.writeProtect(false);
+  rtc.halt(false);
+
+  // Make a new time object to set the date and time.
+  // Sunday, September 22, 2013 at 01:38:50.
+  Time t(2013, 9, 22, 1, 38, 50, Time::kSunday);
+
+  // Set the time and date on the chip.
+  rtc.time(t);
+}
+
+String getCurrentTime() {
+  String result = "";
+
+  Serial.println(result);
+  return result;
 }
 
