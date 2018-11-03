@@ -1,5 +1,6 @@
 #include <EEPROM.h>
-#include <DS1302.h>
+#include <iarduino_RTC.h>
+iarduino_RTC time(RTC_DS1302,10,13,12);
 
 int LED = 13;
 int length = 4;
@@ -26,16 +27,11 @@ int stepForReasing = 8;
 int EEPROMAddres = 0;
 
 int dataReadedFromEEPROM = 0;
-const int kCePin   = 5;  // Chip Enable
-const int kIoPin   = 6;  // Input/Output
-const int kSclkPin = 7;  // Serial Clock
 
-// Create a DS1302 object.
-DS1302 rtc(kCePin, kIoPin, kSclkPin);
 
 void setup() {
   Serial.begin(9600);
-  setUpClock();
+//  setUpClock("0", "51", "21"); // Uncomment for setup data
 
   if (dataReadedFromEEPROM < 1) {
     dataReadedFromEEPROM = dataReadedFromEEPROM + 1;
@@ -62,9 +58,11 @@ void setup() {
 
 void loop() {
 
+  Serial.println(getCurrentTime());
   if (Serial.available()) {
     char c = Serial.read();
     r = c;
+
  
     if (r.equalsIgnoreCase(";")) {
       Serial.println("Nachal rabotat s " + command);
@@ -207,22 +205,14 @@ String validator(String inputData) {
   return inputData;
 }
 
-void setUpClock() {  
-  rtc.writeProtect(false);
-  rtc.halt(false);
-
-  // Make a new time object to set the date and time.
-  // Sunday, September 22, 2013 at 01:38:50.
-  Time t(2013, 9, 22, 1, 38, 50, Time::kSunday);
-
-  // Set the time and date on the chip.
-  rtc.time(t);
+void setUpClock(String hour, String minutes, String seconds) { 
+  time.begin();
+  time.settime(hour.toInt(),minutes.toInt(),hour.toInt(),11,3,18,6);  // 0  сек, 51 мин, 21 час, 27, октября, 2015 года, вторник
 }
 
 String getCurrentTime() {
   String result = "";
-
-  Serial.println(result);
+  result = result + time.gettime("d-m-Y, H:i:s, D");
   return result;
 }
 
