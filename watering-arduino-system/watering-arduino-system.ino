@@ -33,7 +33,7 @@ int dataReadedFromEEPROM = 0;
 
 void setup() {
   Serial.begin(9600);
-  setUpClock("12", "14", "00"); // Uncomment for setup data
+  setUpClock("12", "12", "00"); // Uncomment for setup data
   Serial.println(getCurrentTime());
 
   if (dataReadedFromEEPROM < 1) {
@@ -228,19 +228,29 @@ String getCurrentTime() {
 }
 
 boolean checkExistingTime(String tagetTime, String currentTime) {
-  Serial.println(tagetTime + " != " + currentTime);
   return currentTime.equals(tagetTime);
 }
 
 void CheckingNeadedProcessing() {
   String currentTime = getCurrentTime();
   boolean neadTurnOnWater = checkExistingTime(startTimeForWater, currentTime);
+  boolean neadTurnOffWater = checkExistingTime(endTimeForWater, currentTime);
   boolean neadTurnOnLight = checkExistingTime(startTimeForLight, currentTime);
+  boolean neadTurnOffLight = checkExistingTime(endTimeForLight, currentTime);
+
   if (neadTurnOnWater) {
     turnOnWater();
+  } else {
+    if (neadTurnOffWater) {
+      turnOffWater();
+    }  
   }
   if (neadTurnOnLight) {
     turnOnLight();
+  } else {
+    if (neadTurnOffLight) {
+      turnOffLight();
+    }  
   }
   
 }
@@ -278,11 +288,10 @@ int prevBiggestOne(String input) {
 }
 
 String validateHours(String input) {
-  String result = "";
   if (input.toInt() >= 24) {
-    result = String(input.toInt() - 24);
+    input = String(input.toInt() - 24);
   }
-  return result;
+  return input;
 }
 
 void calculateEndTime() {
