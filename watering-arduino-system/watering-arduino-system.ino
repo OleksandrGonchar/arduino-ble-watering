@@ -128,6 +128,9 @@ void loop() {
       Serial.println("extraLight: " + extraLight);
       Serial.println("extraWater: " + extraWater);
 
+      // Parse extra water & Light command
+      parseExtraCommand();
+
       // Write data to EEPROM
       Serial.println("Write data to EEPROM");
       // Water
@@ -313,4 +316,21 @@ void calculateEndTime() {
 
   Serial.println("End time for water: " + endTimeForWater);
   Serial.println("End time for light: " + endTimeForLight);
+}
+
+void parseExtraCommand() {
+  if (extraLight) {
+    turnOnWater();
+  } else {
+    if (extraLight) {
+      turnOffWater();
+    }  
+  }
+  if (extraWater) {
+    turnOnLight();
+  } else {
+    if (extraWater) {
+      turnOffLight();
+    }  
+  }
 }
