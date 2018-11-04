@@ -16,6 +16,9 @@ String startTimeForWater = "";
 String durationForWater = "";
 String brakeTimeForWater = "";
 
+String endTimeForWater = "";
+String endTimeForLight = "";
+
 String extraLight = "";
 String extraWater = "";
 
@@ -28,14 +31,13 @@ int EEPROMAddres = 0;
 
 int dataReadedFromEEPROM = 0;
 
-
 void setup() {
   Serial.begin(9600);
-//  setUpClock("0", "51", "21"); // Uncomment for setup data
+  setUpClock("12", "14", "00"); // Uncomment for setup data
+  Serial.println(getCurrentTime());
 
   if (dataReadedFromEEPROM < 1) {
     dataReadedFromEEPROM = dataReadedFromEEPROM + 1;
-    Serial.println("Read Data From EEPROM");
     
     startTimeForWater = readData(0);
     durationForWater = readData(3);
@@ -51,6 +53,8 @@ void setup() {
     Serial.println("durationForLight : " + durationForLight);
     Serial.println("brakeTimeForLight : " + brakeTimeForLight);
 
+    calculateEndTime();
+
     pinMode(LED, OUTPUT);
   }
 
@@ -58,7 +62,9 @@ void setup() {
 
 void loop() {
 
-  Serial.println(getCurrentTime());
+//  Serial.println(getCurrentTime());
+  CheckingNeadedProcessing();
+
   if (Serial.available()) {
     char c = Serial.read();
     r = c;
@@ -172,15 +178,20 @@ void writeData(String data, int EEPROMAddres) {
   }
 }
 
+String addMissedSigns(String readed) {
+  if (readed.length() < 2) {
+    readed = "0" + readed;
+  }
+  return readed;
+}
+
 String readData(int EEPROMAddres) {
   String result = "";
   String readed = "";
 
   for (int i = 0; i < 8; i = i + 2) {
     readed = EEPROM.read(EEPROMAddres);
-    if (readed.length() < 2) {
-      readed = "0" + readed;
-    }
+    readed = addMissedSigns(readed);
     result = result + readed + ":";
     EEPROMAddres = EEPROMAddres + 1;
     i = i + 1;
@@ -207,12 +218,65 @@ String validator(String inputData) {
 
 void setUpClock(String hour, String minutes, String seconds) { 
   time.begin();
-  time.settime(hour.toInt(),minutes.toInt(),hour.toInt(),11,3,18,6);  // 0  сек, 51 мин, 21 час, 27, октября, 2015 года, вторник
+  time.settime(hour.toInt(),minutes.toInt(),hour.toInt(),11,3,18,6);
 }
 
 String getCurrentTime() {
   String result = "";
-  result = result + time.gettime("d-m-Y, H:i:s, D");
+  result = result + time.gettime("H:i:s");
   return result;
 }
 
+boolean checkExistingTime(String tagetTime, String currentTime) {
+  Serial.println(tagetTime + " != " + currentTime);
+  return currentTime.equals(tagetTime);
+}
+
+void CheckingNeadedProcessing() {
+  String currentTime = getCurrentTime();
+  boolean neadTurnOnWater = checkExistingTime(startTimeForWater, currentTime);
+  boolean neadTurnOnLight = checkExistingTime(startTimeForLight, currentTime);
+  if (neadTurnOnWater) {
+    turnOnWater();
+  }
+  if (neadTurnOnLight) {
+    turnOnLight();
+  }
+  
+}
+
+void turnOnWater() {
+  Serial.println("Turn on Water");
+}
+
+void turnOffWater() {
+  Serial.println("Turn off Water");
+}
+
+void turnOnLight() {
+  Serial.println("Turn on Light");
+}
+
+void turnOffLight() {
+  Serial.println("Turn off Light");
+}
+
+void calculateEndTime() {
+  delay(500);
+  String hours = "";
+  String minutes = "";
+  String seconds = "";
+  hours = String(getHours(startTimeForWater).toInt() + getHours(durationForWater).toInt());
+  minutes = String(getMinutes(startTimeForWater).toInt() + getMinutes(durationForWater).toInt());
+  seconds = String(getSeconds(startTimeForWater).toInt() + getSeconds(durationForWater).toInt());
+
+  endTimeForWater = addMissedSigns(hours) + ":" + addMissedSigns(minutes) + ":" + addMissedSigns(seconds);
+
+  hours = String(getHours(startTimeForLight).toInt() + getHours(durationForLight).toInt());
+  minutes = String(getMinutes(startTimeForLight).toInt() + getMinutes(durationForLight).toInt());
+  seconds = String(getSeconds(startTimeForLight).toInt() + getSeconds(durationForLight).toInt());
+
+  endTimeForLight = addMissedSigns(hours) + ":" + addMissedSigns(minutes) + ":" + addMissedSigns(seconds);
+  Serial.println("End time for water: " + endTimeForWater);
+  Serial.println("End time for light: " + endTimeForLight);
+}
