@@ -270,11 +270,19 @@ String isBiggestSixty(String input) {
 }
 
 int prevBiggestOne(String input) {
+  int result = 0;
   if (input.toInt() >= 60) {
-    return 1;
-  } else {
-    return 0;
+    result = result + 1;
   }
+  return result;
+}
+
+String validateHours(String input) {
+  String result = "";
+  if (input.toInt() >= 24) {
+    result = String(input.toInt() - 24);
+  }
+  return result;
 }
 
 void calculateEndTime() {
@@ -282,17 +290,18 @@ void calculateEndTime() {
   String hours = "";
   String minutes = "";
   String seconds = "";
-  hours = String(getHours(startTimeForWater).toInt() + getHours(durationForWater).toInt());
-  minutes = String(getMinutes(startTimeForWater).toInt() + getMinutes(durationForWater).toInt());
   seconds = String(getSeconds(startTimeForWater).toInt() + getSeconds(durationForWater).toInt());
+  minutes = String(getMinutes(startTimeForWater).toInt() + getMinutes(durationForWater).toInt() + prevBiggestOne(seconds));
+  hours = String(getHours(startTimeForWater).toInt() + getHours(durationForWater).toInt() + prevBiggestOne(minutes));
 
-  endTimeForWater = addMissedSigns(hours) + ":" + addMissedSigns(minutes) + ":" + addMissedSigns(seconds);
+  endTimeForWater = addMissedSigns(validateHours(hours)) + ":" + addMissedSigns(isBiggestSixty(minutes)) + ":" + addMissedSigns(isBiggestSixty(seconds));
 
-  hours = String(getHours(startTimeForLight).toInt() + getHours(durationForLight).toInt());
-  minutes = String(getMinutes(startTimeForLight).toInt() + getMinutes(durationForLight).toInt());
   seconds = String(getSeconds(startTimeForLight).toInt() + getSeconds(durationForLight).toInt());
+  minutes = String(getMinutes(startTimeForLight).toInt() + getMinutes(durationForLight).toInt() + prevBiggestOne(seconds));
+  hours = String(getHours(startTimeForLight).toInt() + getHours(durationForLight).toInt() + prevBiggestOne(minutes));
 
-  endTimeForLight = addMissedSigns(hours) + ":" + addMissedSigns(minutes) + ":" + addMissedSigns(seconds);
+  endTimeForLight = addMissedSigns(validateHours(hours)) + ":" + addMissedSigns(isBiggestSixty(minutes)) + ":" + addMissedSigns(isBiggestSixty(seconds));
+
   Serial.println("End time for water: " + endTimeForWater);
   Serial.println("End time for light: " + endTimeForLight);
 }
