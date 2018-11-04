@@ -261,6 +261,22 @@ void turnOffLight() {
   Serial.println("Turn off Light");
 }
 
+String isBiggestSixty(String input) {
+  if (input.toInt() >= 60) {
+    return addMissedSigns(String(input.toInt() - 60));
+  } else {
+    return input;
+  }
+}
+
+int prevBiggestOne(String input) {
+  if (input.toInt() >= 60) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 void calculateEndTime() {
   delay(500);
   String hours = "";
