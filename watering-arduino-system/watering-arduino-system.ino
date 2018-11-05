@@ -31,6 +31,10 @@ int EEPROMAddres = 0;
 
 int dataReadedFromEEPROM = 0;
 
+// Flags for denounce
+boolean waterTurnedOn = false;
+boolean lightTurnedOn = false;
+
 void setup() {
   Serial.begin(9600);
   setUpClock("12", "12", "00"); // Uncomment for setup data
@@ -230,48 +234,60 @@ String getCurrentTime() {
   return result;
 }
 
-boolean checkExistingTime(String tagetTime, String currentTime) {
-  return currentTime.equals(tagetTime);
+boolean checkExistingTime(String minTime, String maxTime, String currentTime) {
+  boolean result = false;
+  String minTimeParsed = getHours(minTime) + getMinutes(minTime) + getSeconds(minTime);
+  String maxTimeParsed = getHours(maxTime) + getMinutes(maxTime) + getSeconds(maxTime);
+  String currentTimeParsed = getHours(currentTime) + getMinutes(currentTime) + getSeconds(currentTime);
+//  Serial.println("" + currentTimeParsed + "<" + minTimeParsed + "<" + currentTimeParsed + "<" + maxTimeParsed);
+  
+  return currentTimeParsed.toInt() > minTimeParsed.toInt() && currentTimeParsed.toInt() < maxTimeParsed.toInt();
 }
 
 void CheckingNeadedProcessing() {
   String currentTime = getCurrentTime();
-  boolean neadTurnOnWater = checkExistingTime(startTimeForWater, currentTime);
-  boolean neadTurnOffWater = checkExistingTime(endTimeForWater, currentTime);
-  boolean neadTurnOnLight = checkExistingTime(startTimeForLight, currentTime);
-  boolean neadTurnOffLight = checkExistingTime(endTimeForLight, currentTime);
+  boolean neadTurnOnWater = checkExistingTime(startTimeForWater, endTimeForWater, currentTime);
+  boolean neadTurnOnLight = checkExistingTime(startTimeForLight, endTimeForLight, currentTime);
 
   if (neadTurnOnWater) {
     turnOnWater();
   } else {
-    if (neadTurnOffWater) {
-      turnOffWater();
-    }  
+    turnOffWater();
   }
+
   if (neadTurnOnLight) {
     turnOnLight();
   } else {
-    if (neadTurnOffLight) {
-      turnOffLight();
-    }  
+    turnOffLight();
   }
-  
 }
 
 void turnOnWater() {
-  Serial.println("Turn on Water");
+  if (waterTurnedOn == false) {
+    Serial.println("Turn on Water");
+    waterTurnedOn = !waterTurnedOn;
+  }
 }
 
 void turnOffWater() {
-  Serial.println("Turn off Water");
+  if (waterTurnedOn == true) {
+    Serial.println("Turn off Water");
+    waterTurnedOn = !waterTurnedOn;
+  }
 }
 
 void turnOnLight() {
-  Serial.println("Turn on Light");
+  if (lightTurnedOn == false) {
+    Serial.println("Turn on Light");
+    lightTurnedOn = !lightTurnedOn;
+  }
 }
 
 void turnOffLight() {
-  Serial.println("Turn off Light");
+  if (lightTurnedOn == true) {
+    Serial.println("Turn off Light");
+    lightTurnedOn = !lightTurnedOn;
+  }
 }
 
 String isBiggestSixty(String input) {
