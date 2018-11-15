@@ -19,8 +19,11 @@ String brakeTimeForWater = "";
 String endTimeForWater = "";
 String endTimeForLight = "";
 
+
 String extraLight = "";
 String extraWater = "";
+
+String currentTimes = "";
 
 //data for usage
 int iterator = 0;
@@ -37,7 +40,7 @@ boolean lightTurnedOn = false;
 
 void setup() {
   Serial.begin(9600);
-  setUpClock("12", "12", "00"); // Uncomment for setup data
+//  setUpClock("12", "12", "00"); // Uncomment for setup data
   Serial.println(getCurrentTime());
 
   if (dataReadedFromEEPROM < 1) {
@@ -71,6 +74,7 @@ void loop() {
 
   if (Serial.available()) {
     char c = Serial.read();
+    delay(1);
     r = c;
 
  
@@ -118,6 +122,13 @@ void loop() {
       endIteration += 1;
       iterator = endIteration;
 
+      // current Time
+      endIteration += stepForReasing;
+      currentTimes = parceCommand(command, iterator, endIteration);
+      Serial.println("currentTimes: " + currentTimes);
+      endIteration += 1;
+      iterator = endIteration;
+
       // exra commands
       endIteration += 1;
       extraLight = parceCommand(command, iterator, endIteration);
@@ -134,6 +145,8 @@ void loop() {
 
       // Parse extra water & Light command
       parseExtraCommand();
+
+      // setup current time
 
       // Write data to EEPROM
       Serial.println("Write data to EEPROM");
