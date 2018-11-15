@@ -126,18 +126,15 @@ void loop() {
       endIteration += stepForReasing;
       currentTimes = parceCommand(command, iterator, endIteration);
       Serial.println("currentTimes: " + currentTimes);
-      endIteration += 1;
       iterator = endIteration;
 
       // exra commands
       endIteration += 1;
       extraLight = parceCommand(command, iterator, endIteration);
-      endIteration += 1;
       iterator = endIteration;
       
       endIteration += 1;
       extraWater = parceCommand(command, iterator, endIteration);
-      endIteration += 1;
       iterator = endIteration;
 
       Serial.println("extraLight: " + extraLight);
