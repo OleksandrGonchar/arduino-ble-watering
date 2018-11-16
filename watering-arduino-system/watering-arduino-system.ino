@@ -342,18 +342,16 @@ void calculateEndTime() {
 }
 
 void parseExtraCommand() {
-  if (extraLight) {
-    turnOnWater();
-  } else {
-    if (extraLight) {
-      turnOffWater();
-    }  
-  }
-  if (extraWater) {
+  Serial.println("parseExtraCommand:start");
+  if (extraLight.equalsIgnoreCase("1")) {
     turnOnLight();
   } else {
-    if (extraWater) {
-      turnOffLight();
-    }  
+    turnOffLight();
   }
+  if (extraWater.equalsIgnoreCase("1")) {
+    turnOnWater();
+  } else {
+    turnOffWater();
+  }
+  Serial.println("parseExtraCommand:end");
 }
