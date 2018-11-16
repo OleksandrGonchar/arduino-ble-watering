@@ -1,4 +1,4 @@
-#include <EEPROM.h>
+  #include <EEPROM.h>
 #include <iarduino_RTC.h>
 iarduino_RTC time(RTC_DS1302,10,13,12);
 
@@ -182,16 +182,13 @@ String getSeconds(String str) {
 }
 
 void writeData(String data, int EEPROMAddres) {
-  Serial.println("Start writing: " + data);
   int result = 0;
 
   for (int i = 0; i < 8; i = i + 2) {
     result = data.substring(i, i+2).toInt();
-    Serial.println(result);
     EEPROM.put(EEPROMAddres, result);
     EEPROMAddres = EEPROMAddres + 1;
     i = i + 1;
-    Serial.println("Last addres eerpm: " + EEPROMAddres); 
   }
 }
 
