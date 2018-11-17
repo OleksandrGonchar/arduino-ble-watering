@@ -40,8 +40,8 @@ boolean lightTurnedOn = false;
 
 void setup() {
   Serial.begin(9600);
-//  setUpClock("12", "12", "00"); // Uncomment for setup data
-  Serial.println(getCurrentTime());
+  time.begin();
+  Serial.println("Current time: " + getCurrentTime());
 
   if (dataReadedFromEEPROM < 1) {
     dataReadedFromEEPROM = dataReadedFromEEPROM + 1;
@@ -144,6 +144,7 @@ void loop() {
       parseExtraCommand();
 
       // setup current time
+      setUpClock(getHours(currentTimes), getMinutes(currentTimes), getSeconds(currentTimes));
 
       // Write data to EEPROM
       Serial.println("Write data to EEPROM");
@@ -230,8 +231,7 @@ String validator(String inputData) {
   return inputData;
 }
 
-void setUpClock(String hour, String minutes, String seconds) { 
-  time.begin();
+void setUpClock(String hour, String minutes, String seconds) {
   time.settime(hour.toInt(),minutes.toInt(),hour.toInt(),11,3,18,6);
 }
 
