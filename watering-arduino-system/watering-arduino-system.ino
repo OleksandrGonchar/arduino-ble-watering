@@ -160,6 +160,7 @@ void loop() {
       writeData(durationForLight, 12);
       writeData(brakeTimeForLight, 15);
 
+      calculateEndTime();
      
       endIteration = 0;
       command = "";
@@ -176,18 +177,14 @@ boolean checkExistingTime(String minTime, String maxTime, String currentTime) {
   String minTimeParsed = getHours(minTime) + getMinutes(minTime) + getSeconds(minTime);
   String maxTimeParsed = getHours(maxTime) + getMinutes(maxTime) + getSeconds(maxTime);
   String currentTimeParsed = getHours(currentTime) + getMinutes(currentTime) + getSeconds(currentTime);
-  Serial.println("" + currentTimeParsed + ">" + minTimeParsed + " && " + currentTimeParsed + "<" + maxTimeParsed);
+  // Serial.println("" + currentTimeParsed + ">" + minTimeParsed + " && " + currentTimeParsed + "<" + maxTimeParsed);
   
   return currentTimeParsed.toInt() > minTimeParsed.toInt() && currentTimeParsed.toInt() < maxTimeParsed.toInt();
 }
 
-void CheckingNeadedProcessing() {
-  String currentTime = getCurrentTime();
-  // Serial.println(currentTime);
+void CheckingNeadedProcessingWater(String currentTime) {
   boolean neadTurnOnWater = checkExistingTime(startTimeForWater, endTimeForWater, currentTime);
- // Serial.println("startTimeForWater: "+startTimeForWater+ " ,endTimeForWater: "+endTimeForWater+ ", currentTime: " + currentTime);
 
-  // ToDo check current behavior for all commands, some extra commands work not as expected
   if (neadTurnOnWater) {
     //Serial.println("neadTurnOnWater: " + extraWater);
     if (extraWater.equalsIgnoreCase("0")) {
@@ -215,8 +212,46 @@ void CheckingNeadedProcessing() {
       turnOffWater();
       return;
     }
-  }
+  }  
+}
 
+void CheckingNeadedProcessingLight(String currentTime ) {
+  boolean neadTurnOnLight = checkExistingTime(startTimeForLight, endTimeForLight, currentTime);
+  
+  if (neadTurnOnLight) {
+    //Serial.println("neadTurnOnWater: " + extraWater);
+    if (extraLight.equalsIgnoreCase("0")) {
+      turnOffLight();
+      return;
+    } else {
+      extraLight = "_";
+      turnOnLight();
+      return;
+    }
+  } else {
+    if (extraLight.equalsIgnoreCase("1")) {
+      turnOnLight();
+      return;
+    }
+
+    if (extraLight.equalsIgnoreCase("0")) {
+      turnOffLight();
+      extraLight = "_";
+      return;
+    }
+
+    if (extraLight.equalsIgnoreCase("_")) {
+      turnOffLight();
+      return;
+    }
+  }
+}
+
+void CheckingNeadedProcessing() {
+  String currentTime = getCurrentTime();
+
+  CheckingNeadedProcessingWater(currentTime);
+  CheckingNeadedProcessingLight(currentTime);
 }
 
 String parceCommand(String str, int start, int endRead) {
@@ -293,17 +328,17 @@ String getCurrentTime() {
 }
 
 void turnOnWater() {
- // if (waterTurnedOn == false) {
+  if (waterTurnedOn == false) {
     Serial.println("Turn on Water");
-//    waterTurnedOn = !waterTurnedOn;
-  //}
+    waterTurnedOn = !waterTurnedOn;
+  }
 }
 
 void turnOffWater() {
-  // if (waterTurnedOn == true) {
+  if (waterTurnedOn == true) {
     Serial.println("Turn off Water");
-//    waterTurnedOn = !waterTurnedOn;
- // }
+    waterTurnedOn = !waterTurnedOn;
+  }
 }
 
 void turnOnLight() {
