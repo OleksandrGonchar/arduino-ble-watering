@@ -1,7 +1,9 @@
-  #include <EEPROM.h>
+#include <EEPROM.h>
 #include <iarduino_RTC.h>
 iarduino_RTC time(RTC_DS1302,10,13,12);
 
+int LIGHT_PIN = 6;
+int WATER_PIN = 7;
 int LED = 13;
 int length = 4;
 String command = "";
@@ -63,6 +65,8 @@ void setup() {
     calculateEndTime();
 
     pinMode(LED, OUTPUT);
+    pinMode(LIGHT_PIN, OUTPUT);
+    pinMode(WATER_PIN, OUTPUT);
   }
 
 }
@@ -331,6 +335,7 @@ void turnOnWater() {
   if (waterTurnedOn == false) {
     Serial.println("Turn on Water");
     waterTurnedOn = !waterTurnedOn;
+    digitalWrite(WATER_PIN, waterTurnedOn);
   }
 }
 
@@ -338,6 +343,7 @@ void turnOffWater() {
   if (waterTurnedOn == true) {
     Serial.println("Turn off Water");
     waterTurnedOn = !waterTurnedOn;
+    digitalWrite(WATER_PIN, waterTurnedOn);
   }
 }
 
@@ -345,6 +351,7 @@ void turnOnLight() {
   if (lightTurnedOn == false) {
     Serial.println("Turn on Light");
     lightTurnedOn = !lightTurnedOn;
+    digitalWrite(LIGHT_PIN, lightTurnedOn);
   }
 }
 
@@ -352,6 +359,7 @@ void turnOffLight() {
   if (lightTurnedOn == true) {
     Serial.println("Turn off Light");
     lightTurnedOn = !lightTurnedOn;
+    digitalWrite(LIGHT_PIN, lightTurnedOn);
   }
 }
 
