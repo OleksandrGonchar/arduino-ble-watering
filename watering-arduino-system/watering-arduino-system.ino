@@ -1,6 +1,6 @@
 #include <EEPROM.h>
 #include <iarduino_RTC.h>
-iarduino_RTC time(RTC_DS1302,10,13,12);
+iarduino_RTC time(RTC_DS1302,10,11,12);
 
 int LIGHT_PIN = 6;
 int WATER_PIN = 7;
@@ -74,9 +74,10 @@ void setup() {
 void loop() {
 
 //  Serial.println(getCurrentTime());
-  CheckingNeadedProcessing();
+ // CheckingNeadedProcessing();
 
   if (Serial.available()) {
+    Serial.println("Serial.available");
     char c = Serial.read();
     delay(1);
     r = c;
