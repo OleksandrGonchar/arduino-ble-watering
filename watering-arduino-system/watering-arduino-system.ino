@@ -74,10 +74,9 @@ void setup() {
 void loop() {
 
 //  Serial.println(getCurrentTime());
- // CheckingNeadedProcessing();
+  CheckingNeadedProcessing();
 
   if (Serial.available()) {
-    Serial.println("Serial.available");
     char c = Serial.read();
     delay(1);
     r = c;
